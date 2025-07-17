@@ -4,6 +4,8 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
+import matplotlib.patches as patches
+
 
 st.set_page_config(page_title="Tuberculosis Dashboard", page_icon="🩺", layout="wide")
 st.title("🩺 Tuberculosis Chest X-ray Dataset Analysis")
@@ -159,23 +161,23 @@ symptom_components = [
 df["Symptom_Score"] = df[symptom_components].sum(axis=1)
 
 question_dict = {
-    "Can we determine whether one has Tuberculosis by fever levels?": {
+    "a. Can we determine whether one has Tuberculosis by fever levels?": {
         "plot_code": lambda df: px.histogram(df, x='Fever', color='Class', barmode='group', title="Fever Level vs TB Class"),
         "answer": "Among the three fever levels, the Mild category has the highest number of TB cases, followed by High and then Moderate. This might be counterintuitive, as one might expect higher TB cases at high fever levels. It suggests fever intensity alone may not predict TB reliably."
     },
-    "Does Smoking effect the chances of getting diagnosed with Tuberculosis?": {
+    "b. Does Smoking effect the chances of getting diagnosed with Tuberculosis?": {
         "plot_code": lambda df: px.histogram(df, x='Smoking_History', color='Class', barmode='group', title="Smoking History vs TB Class"),
         "answer": "Former and Current smokers show a slightly higher count of TB cases than Never smokers. While the Normal class is higher in all groups, the proportion of TB cases is marginally greater in smokers."
     },
-    "Does the presence of blood in sputum increase TB risk?": {
+    "c. Does the presence of blood in sputum increase TB risk?": {
         "plot_code": lambda df: px.bar(combo_tb_rate, x="Symptom_Combination", y="Class_Num", title="Top Symptom Combinations (Fatigue + Sputum + Blood) with High TB Rate"),
         "answer": "All listed combinations with B1 (blood in sputum present) rank among the highest proportions of TB. This suggests a strong association between blood in sputum and higher TB detection rates when accompanied by fever and sputum secretion level."
     },
-    "Does the absence of blood in sputum (B0) still indicate a TB risk?": {
+    "d. Does the absence of blood in sputum (B0) still indicate a TB risk?": {
         "plot_code": lambda df: px.bar(combo_tb_rate, x="Symptom_Combination", y="Class_Num", title="Top Symptom Combinations (Fatigue + Sputum + Blood) with High TB Rate"),
         "answer": "Several combinations with B0 are present in the top ranks, though they tend to have slightly lower TB proportions compared to those with B1, indicating that TB can occur without blood in sputum, though with a lower likelihood among these combinations."
     },
-    "Does higher cough severity always mean greater TB probability?": {
+    "e. Does higher cough severity always mean greater TB probability?": {
         "plot_code": lambda df: px.imshow(
             heat_data,
             text_auto=True,
@@ -184,11 +186,11 @@ question_dict = {
         ),
         "answer": "No. Moderate cough severity with low weight loss actually shows a slightly higher probability than high cough severity with the same weight loss."
     },
-    "Does a history of previous Tuberculosis significantly raise the possibility of a patient to be diagnosed with Tuberculosis again?": {
+    "f. Does a history of previous Tuberculosis significantly raise the possibility of a patient to be diagnosed with Tuberculosis again?": {
         "plot_code": lambda df: px.bar(tb_risk_combo, x="RiskCombo", y="Class_Num", title="Top Smoking + Previous TB + Symptom Combinations with High TB Rate"),
         "answer": "Tuberculosis history when combined with other factors like smoking regularity, fatigue level, cough severity and Fever level shows that a prior episode is a substantial risk factor for future Tuberculosis."
     },
-    "Is there any specific age group where Tuberculosis is more likely to appear?": {
+    "g. Is there any specific age group where Tuberculosis is more likely to appear?": {
         "plot_code": lambda df: px.scatter(
             df, x="Age", y="Symptom_Score", color="Class",
             title="Age vs Symptom Group Score by TB Class",
@@ -196,21 +198,104 @@ question_dict = {
         ),
         "answer": "The points are spread relatively evenly across all ages and symptom group scores, indicating that higher or lower symptom group scores are not concentrated in specific age ranges."
     },
+    "h. Can symptom severity alone distinguish between tuberculosis and normal patients?": {
+    "plot_code": lambda df: (
+        __import__('matplotlib.pyplot').figure(figsize=(10, 6)),
+        __import__('seaborn').boxplot(
+            data=pd.melt(df, id_vars='Class', value_vars=['Cough_Severity', 'Fatigue'],
+                         var_name='Symptom', value_name='Severity'),
+            x='Symptom', y='Severity', hue='Class'
+        ),
+        plt.title('Symptom Severities by Class'),
+        plt.ylabel('Severity Level'),
+        st.pyplot(plt.gcf())
+    )[2],
+    "answer": "No, there is considerable overlap in the distributions for both cough and fatigue severity between the two classes, indicating these symptoms alone are not sufficient to clearly separate TB from normal cases."
+},
+
+"i. Is there a pattern between weight loss and TB probability?": {
+    "plot_code": lambda df: (
+        px.imshow(
+            df.pivot_table(
+                values="Class_Num",
+                index="Cough_Bin",
+                columns="Weight_Bin",
+                aggfunc="mean",
+                observed=False
+            ),
+            text_auto=".2f",
+            color_continuous_scale="Blues",
+            aspect="square",
+            title="Probability of TB by Cough Severity and Weight Loss"
+        ).update_layout(
+            xaxis_title="Weight Loss Category",
+            yaxis_title="Cough Severity Category"
+        )
+    ),
+    "answer": "Yes. With low cough severity, increasing weight loss from low to high markedly increases TB probability."
+},
+
+"j. Will patients with a history of Tuberculosis be at higher risk with smoking?": {
+    "plot_code": lambda df: (
+        px.bar(
+            tb_risk_combo,
+            x="RiskCombo",
+            y="Class_Num",
+            color_discrete_sequence=["#3787c0"],
+            title="Top Smoking + Previous TB + Symptom Combinations with High TB Rate",
+            height=600
+        ).update_layout(
+            xaxis_title="Risk Combination",
+            yaxis_title="Probability of TB",
+            legend_title_text="",
+            xaxis_tickangle=45
+        )
+    ),
+    "answer": "Every combination includes smoking as a risk factor, highlighting its strong association with elevated TB probability."
+}
+
     # If more questions are needed, add here...
 }
 
-# List of questions (update for up to 10 total)
-question_list = list(question_dict.keys())
+# --- Bonus Section ---
+st.header("🎁 Bonus Question")
 
-st.header("Detailed Symptom & Risk Analysis")
-selected_question = st.selectbox(
-    "Select a question to explore:",
-    question_list
-)
+st.subheader("Did you like my visualization?")
 
-if selected_question:
-    plot_func = question_dict[selected_question]["plot_code"]
-    st.plotly_chart(plot_func(df), use_container_width=True)
-    st.info(question_dict[selected_question]["answer"])
+# Create columns to restrict width (40vw ≈ 2/5 of full width)
+left_spacer, smiley_col, right_spacer = st.columns([3, 2, 5])  # Adjust ratios for 40vw center alignment
 
-# Continue with other analyses or features as needed...
+with smiley_col:
+    fig, ax = plt.subplots(figsize=(4, 4))  # Don't increase figsize here
+
+    # Scale factor to shrink face
+    scale = 0.6
+    center_x, center_y = 0.5, 0.5
+
+    # Face
+    face = patches.Circle((center_x, center_y), 0.4 * scale, facecolor='yellow', edgecolor='black')
+    ax.add_patch(face)
+
+    # Eyes
+    eye_offset_x = 0.15 * scale
+    eye_offset_y = 0.15 * scale
+    eye_radius = 0.05 * scale
+    left_eye = patches.Circle((center_x - eye_offset_x, center_y + eye_offset_y), eye_radius, facecolor='black')
+    right_eye = patches.Circle((center_x + eye_offset_x, center_y + eye_offset_y), eye_radius, facecolor='black')
+    ax.add_patch(left_eye)
+    ax.add_patch(right_eye)
+
+    # Smile
+    mouth = patches.Arc((center_x, center_y - 0.1 * scale), 0.2 * scale, 0.2 * scale, angle=0,
+                        theta1=180, theta2=360, edgecolor='black', linewidth=2)
+    ax.add_patch(mouth)
+
+    # Plot settings
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.set_aspect('equal')
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    st.pyplot(fig)
+
