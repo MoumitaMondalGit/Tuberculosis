@@ -5,7 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Tuberculosis Dashboard", page_icon="🩺", layout="wide")
 st.title("🩺 Tuberculosis Chest X-ray Dataset Analysis")
 
 # --- Data Loading ---
@@ -39,8 +39,8 @@ n_normal = temp_df[temp_df["Class"] == "Normal"].shape[0] if "Class" in temp_df.
 n_tb = temp_df[temp_df["Class"] == "Tuberculosis"].shape[0] if "Class" in temp_df.columns else 0
 
 st.header("Basic Dataset Information")
-st.subheader("Preview (First 10 Rows)")
-st.dataframe(df.head())
+st.subheader("Sample of Raw Data")
+st.dataframe(df.head(10))
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric(label="Total Patients", value=f"{total_patients:,}")
