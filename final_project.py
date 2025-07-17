@@ -7,7 +7,7 @@ import plotly.express as px
 import matplotlib.patches as patches
 
 
-st.set_page_config(page_title="Tuberculosis Dashboard", page_icon="🩺", layout="wide")
+st.set_page_config(layout="wide")
 st.title("🩺 Tuberculosis Chest X-ray Dataset Analysis")
 
 # --- Data Loading ---
@@ -17,6 +17,7 @@ def load_data():
     return df
 
 df = load_data()
+st.success("Dataset loaded successfully from tb_xray_dataset.csv")
 
 # --- Download Raw Data Button ---
 csv_data = df.to_csv(index=False).encode('utf-8')
@@ -40,7 +41,7 @@ n_normal = temp_df[temp_df["Class"] == "Normal"].shape[0] if "Class" in temp_df.
 n_tb = temp_df[temp_df["Class"] == "Tuberculosis"].shape[0] if "Class" in temp_df.columns else 0
 
 st.header("Basic Dataset Information")
-st.subheader("Sample of Raw Data")
+st.subheader("Preview (First 10 Rows)")
 st.dataframe(df.head(10))
 
 col1, col2, col3, col4 = st.columns(4)
@@ -161,29 +162,7 @@ df["Symptom_Score"] = df[symptom_components].sum(axis=1)
 
 question_dict = {
     "a. Can we determine whether one has Tuberculosis by fever levels?": {
-        "plot_code": blue_shades = ["#abd0e6", "#3787c0"]
-fig = px.box(
-    df,
-    x='Class',
-    y='Fatigue',
-    color='Class',
-    color_discrete_sequence=blue_shades,
-    title="Fatigue vs TB Class"
-)
-
-fig.update_layout(
-    xaxis_title="TB Class",
-    yaxis_title="Fatigue",
-    legend_title="Class",
-    legend=dict(
-        x=1.02,
-        y=1,
-        xanchor='left',
-        yanchor='top'
-    ),
-    height=650
-)
-fig.show(),
+        "plot_code": lambda df: px.histogram(df, x='Fever', color='Class', barmode='group', title="Fever Level vs TB Class"),
         "answer": "Among the three fever levels, the Mild category has the highest number of TB cases, followed by High and then Moderate. This might be counterintuitive, as one might expect higher TB cases at high fever levels. It suggests fever intensity alone may not predict TB reliably."
     },
     "b. Does Smoking effect the chances of getting diagnosed with Tuberculosis?": {
