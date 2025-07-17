@@ -256,10 +256,24 @@ question_dict = {
     # If more questions are needed, add here...
 }
 
+# List of questions (update for up to 10 total)
+question_list = list(question_dict.keys())
+
+st.header("Detailed Symptom & Risk Analysis")
+selected_question = st.selectbox(
+    "Select a question to explore:",
+    question_list
+)
+
+if selected_question:
+    plot_func = question_dict[selected_question]["plot_code"]
+    st.plotly_chart(plot_func(df), use_container_width=True)
+    st.info(question_dict[selected_question]["answer"])
+
 # --- Bonus Section ---
 st.header("🎁 Bonus Question")
 
-st.subheader("Did you like my visualization?")
+st.subheader("Did you like my presentation? 😊")
 
 # Create columns to restrict width (40vw ≈ 2/5 of full width)
 left_spacer, smiley_col, right_spacer = st.columns([3, 2, 5])  # Adjust ratios for 40vw center alignment
@@ -297,4 +311,3 @@ with smiley_col:
     ax.set_yticks([])
 
     st.pyplot(fig)
-
