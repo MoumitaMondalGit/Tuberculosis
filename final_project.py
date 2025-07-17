@@ -161,7 +161,29 @@ df["Symptom_Score"] = df[symptom_components].sum(axis=1)
 
 question_dict = {
     "a. Can we determine whether one has Tuberculosis by fever levels?": {
-        "plot_code": lambda df: px.histogram(df, x='Fever', color='Class', barmode='group', title="Fever Level vs TB Class"),
+        "plot_code": blue_shades = ["#abd0e6", "#3787c0"]
+fig = px.box(
+    df,
+    x='Class',
+    y='Fatigue',
+    color='Class',
+    color_discrete_sequence=blue_shades,
+    title="Fatigue vs TB Class"
+)
+
+fig.update_layout(
+    xaxis_title="TB Class",
+    yaxis_title="Fatigue",
+    legend_title="Class",
+    legend=dict(
+        x=1.02,
+        y=1,
+        xanchor='left',
+        yanchor='top'
+    ),
+    height=650
+)
+fig.show(),
         "answer": "Among the three fever levels, the Mild category has the highest number of TB cases, followed by High and then Moderate. This might be counterintuitive, as one might expect higher TB cases at high fever levels. It suggests fever intensity alone may not predict TB reliably."
     },
     "b. Does Smoking effect the chances of getting diagnosed with Tuberculosis?": {
