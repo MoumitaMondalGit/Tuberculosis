@@ -17,7 +17,6 @@ def load_data():
     return df
 
 df = load_data()
-st.success("Dataset loaded successfully from tb_xray_dataset.csv")
 
 # --- Download Raw Data Button ---
 csv_data = df.to_csv(index=False).encode('utf-8')
