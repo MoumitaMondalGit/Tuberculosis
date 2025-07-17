@@ -40,7 +40,7 @@ n_tb = temp_df[temp_df["Class"] == "Tuberculosis"].shape[0] if "Class" in temp_d
 
 st.header("Basic Dataset Information")
 st.subheader("Preview (First 10 Rows)")
-st.dataframe(df.head(10))
+st.dataframe(df.head())
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric(label="Total Patients", value=f"{total_patients:,}")
