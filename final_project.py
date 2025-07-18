@@ -7,7 +7,11 @@ import plotly.express as px
 import matplotlib.patches as patches
 
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Tuberculosis Dashboard",  
+    page_icon="🩺",  
+    layout="wide", 
+)
 st.title("🩺 Tuberculosis Chest X-ray Dataset Analysis")
 
 # --- Data Loading ---
@@ -17,7 +21,6 @@ def load_data():
     return df
 
 df = load_data()
-st.success("Dataset loaded successfully from tb_xray_dataset.csv")
 
 # --- Download Raw Data Button ---
 csv_data = df.to_csv(index=False).encode('utf-8')
@@ -41,7 +44,7 @@ n_normal = temp_df[temp_df["Class"] == "Normal"].shape[0] if "Class" in temp_df.
 n_tb = temp_df[temp_df["Class"] == "Tuberculosis"].shape[0] if "Class" in temp_df.columns else 0
 
 st.header("Basic Dataset Information")
-st.subheader("Preview (First 10 Rows)")
+st.subheader("Sample of Raw Data")
 st.dataframe(df.head(10))
 
 col1, col2, col3, col4 = st.columns(4)
