@@ -199,9 +199,9 @@ question_dict = {
         "answer": "The points are spread relatively evenly across all ages and symptom group scores, indicating that higher or lower symptom group scores are not concentrated in specific age ranges."
     },
     "h. Can symptom severity alone distinguish between tuberculosis and normal patients?": {
-    "plot_code": lambda df: __import__('plotly.express').box(
-        __import__('pandas').melt(df, id_vars='Class', value_vars=['Cough_Severity', 'Fatigue'],
-                                  var_name='Symptom', value_name='Severity'),
+    "plot_code": lambda df: px.box(
+        pd.melt(df, id_vars='Class', value_vars=['Cough_Severity', 'Fatigue'],
+                var_name='Symptom', value_name='Severity'),
         x='Symptom', y='Severity', color='Class',
         title='Symptom Severities by Class'
     ),
