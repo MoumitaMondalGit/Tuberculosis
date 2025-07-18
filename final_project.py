@@ -212,8 +212,7 @@ question_dict = {
         __import__('streamlit').pyplot(__import__('matplotlib.pyplot').gcf())
     ),
     "answer": "No, there is considerable overlap in the distributions for both cough and fatigue severity between the two classes, indicating these symptoms alone are not sufficient to clearly separate TB from normal cases.",
-}
-
+},
 
 "i. Is there a pattern between weight loss and TB probability?": {
     "plot_code": lambda df: (
