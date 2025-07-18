@@ -200,18 +200,20 @@ question_dict = {
     },
     "h. Can symptom severity alone distinguish between tuberculosis and normal patients?": {
     "plot_code": lambda df: (
+        __import__('matplotlib.pyplot').clf(),
         __import__('matplotlib.pyplot').figure(figsize=(10, 6)),
         __import__('seaborn').boxplot(
-            data=pd.melt(df, id_vars='Class', value_vars=['Cough_Severity', 'Fatigue'],
-                         var_name='Symptom', value_name='Severity'),
+            data=__import__('pandas').melt(df, id_vars='Class', value_vars=['Cough_Severity', 'Fatigue'],
+                                           var_name='Symptom', value_name='Severity'),
             x='Symptom', y='Severity', hue='Class'
         ),
-        plt.title('Symptom Severities by Class'),
-        plt.ylabel('Severity Level'),
-        st.pyplot(plt.gcf())
-    )[2],
-    "answer": "No, there is considerable overlap in the distributions for both cough and fatigue severity between the two classes, indicating these symptoms alone are not sufficient to clearly separate TB from normal cases."
-},
+        __import__('matplotlib.pyplot').title('Symptom Severities by Class'),
+        __import__('matplotlib.pyplot').ylabel('Severity Level'),
+        __import__('streamlit').pyplot(__import__('matplotlib.pyplot').gcf())
+    ),
+    "answer": "No, there is considerable overlap in the distributions for both cough and fatigue severity between the two classes, indicating these symptoms alone are not sufficient to clearly separate TB from normal cases.",
+}
+
 
 "i. Is there a pattern between weight loss and TB probability?": {
     "plot_code": lambda df: (
